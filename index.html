@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Bulk Listing Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Flipkart Bulk Listing Tool - Ethnic Sets</h1>
+        
+        <div class="form-container">
+            <form id="productForm">
+                <!-- Mandatory Fields (Blue) -->
+                <fieldset class="blue-fieldset">
+                    <legend>Mandatory Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="flipkartProductLink">Flipkart Product Link</label>
+                        <input type="url" id="flipkartProductLink" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sellerSkuId">Seller SKU ID</label>
+                        <input type="text" id="sellerSkuId" maxlength="64" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="listingStatus">Listing Status</label>
+                        <select id="listingStatus" required>
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="INACTIVE">INACTIVE</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mrp">MRP (INR)</label>
+                        <input type="number" id="mrp" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sellingPrice">Your Selling Price (INR)</label>
+                        <input type="number" id="sellingPrice" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fulfilmentBy">Fulfilment By</label>
+                        <select id="fulfilmentBy" required>
+                            <option value="Flipkart">Flipkart</option>
+                            <option value="Seller">Seller</option>
+                            <option value="Seller Smart">Seller Smart</option>
+                            <option value="Flipkart & Seller Smart">Flipkart & Seller Smart</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brand">Brand</label>
+                        <input type="text" id="brand" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="size">Size</label>
+                        <select id="size" required>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <!-- More size options from the Index sheet -->
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idealFor">Ideal For</label>
+                        <select id="idealFor" required>
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="color">Color</label>
+                        <select id="color" required>
+                            <option value="Beige">Beige</option>
+                            <option value="Black">Black</option>
+                            <option value="Blue">Blue</option>
+                            <!-- More color options from the Index sheet -->
+                            <option value="White">White</option>
+                            <option value="Yellow">Yellow</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fabric">Fabric</label>
+                        <select id="fabric" required>
+                            <option value="Acrylic Blend">Acrylic Blend</option>
+                            <option value="Art Silk">Art Silk</option>
+                            <!-- More fabric options from the Index sheet -->
+                            <option value="Wool">Wool</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mainImageUrl">Main Image URL</label>
+                        <input type="url" id="mainImageUrl" required>
+                        <small>Minimum resolution: 200x1000</small>
+                    </div>
+                </fieldset>
+                
+                <!-- Conditionally Mandatory Fields (Purple) -->
+                <fieldset class="purple-fieldset">
+                    <legend>Conditionally Mandatory Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="procurementType">Procurement Type</label>
+                        <select id="procurementType">
+                            <option value="Express">Express</option>
+                            <option value="Instock">Instock</option>
+                            <option value="Domestic Procurement">Domestic Procurement</option>
+                            <option value="Made To Order">Made To Order</option>
+                            <option value="International">International</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="procurementSla">Procurement SLA (DAY)</label>
+                        <input type="number" id="procurementSla" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" min="0" max="5000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shippingProvider">Shipping Provider</label>
+                        <select id="shippingProvider">
+                            <option value="FLIPKART">FLIPKART</option>
+                            <option value="SELLER">SELLER</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="countryOfOrigin">Country Of Origin</label>
+                        <select id="countryOfOrigin">
+                            <option value="India">India</option>
+                            <option value="China">China</option>
+                            <!-- More country options from DropDownValuesForColumn25 -->
+                        </select>
+                    </div>
+                </fieldset>
+                
+                <!-- Recommended Fields (Yellow) -->
+                <fieldset class="yellow-fieldset">
+                    <legend>Recommended Fields</legend>
+                    
+                    <div class="form-group">
+                        <label for="sleeveLength">Sleeve Length</label>
+                        <select id="sleeveLength">
+                            <option value="3/4 Sleeve">3/4 Sleeve</option>
+                            <option value="Full Sleeve">Full Sleeve</option>
+                            <!-- More sleeve options from the Index sheet -->
+                            <option value="Sleeveless">Sleeveless</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pattern">Pattern</label>
+                            <option value="Abstract">Abstract</option>
+                            <option value="Animal Print">Animal Print</option>
+                            <!-- More pattern options from the Index sheet -->
+                            <option value="Woven">Woven</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="topType">Top Type</label>
+                        <select id="topType">
+                            <option value="Kurta">Kurta</option>
+                            <option value="Kurti">Kurti</option>
+                            <!-- More top type options from the Index sheet -->
+                            <option value="Shirt">Shirt</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bottomType">Bottom Type</label>
+                        <select id="bottomType">
+                            <option value="Dhoti">Dhoti</option>
+                            <option value="Dhoti Pant">Dhoti Pant</option>
+                            <!-- More bottom type options from the Index sheet -->
+                            <option value="Skirt">Skirt</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="occasion">Occasion</label>
+                        <select id="occasion">
+                            <option value="Casual">Casual</option>
+                            <option value="Festive & Party">Festive & Party</option>
+                            <option value="Formal">Formal</option>
+                            <option value="Wedding">Wedding</option>
+                        </select>
+                    </div>
+                </fieldset>
+                
+                <!-- Good-to-have Fields (Green) -->
+                <fieldset class="green-fieldset">
+                    <legend>Additional Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="itemsIncluded">Items Included</label>
+                        <input type="text" id="itemsIncluded" placeholder="e.g., 1 Kurta::1 Pyjama">
+                        <small>Separate multiple items with double colons (::)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="otherImageUrl1">Other Image URL 1</label>
+                        <input type="url" id="otherImageUrl1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="otherImageUrl2">Other Image URL 2</label>
+                        <input type="url" id="otherImageUrl2">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" maxlength="1000"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="searchKeywords">Search Keywords</label>
+                        <input type="text" id="searchKeywords" placeholder="e.g., ethnic wear, kurta set">
+                        <small>Separate keywords with commas (max 5)</small>
+                    </div>
+                </fieldset>
+                
+                <div class="form-actions">
+                    <button type="button" id="addProductBtn">Add Product</button>
+                    <button type="button" id="reviewProductsBtn">Review Products</button>
+                    <button type="reset">Clear Form</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="products-list" id="productsList">
+            <h2>Products Added</h2>
+            <div class="products-container" id="productsContainer">
+                <!-- Products will be added here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
