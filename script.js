@@ -1,186 +1,373 @@
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    background-color: #f5f5f5;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-    color: #2874f0;
-    text-align: center;
-}
-
-.form-container {
-    margin-bottom: 30px;
-}
-
-fieldset {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-legend {
-    font-weight: bold;
-    padding: 0 10px;
-}
-
-.blue-fieldset {
-    border-color: #1a73e8;
-    background-color: #e8f0fe;
-}
-
-.blue-fieldset legend {
-    color: #1a73e8;
-}
-
-.purple-fieldset {
-    border-color: #8e24aa;
-    background-color: #f3e5f5;
-}
-
-.purple-fieldset legend {
-    color: #8e24aa;
-}
-
-.yellow-fieldset {
-    border-color: #ffb300;
-    background-color: #fff8e1;
-}
-
-.yellow-fieldset legend {
-    color: #ffb300;
-}
-
-.green-fieldset {
-    border-color: #43a047;
-    background-color: #e8f5e9;
-}
-
-.green-fieldset legend {
-    color: #43a047;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="url"],
-select,
-textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-textarea {
-    height: 100px;
-    resize: vertical;
-}
-
-small {
-    font-size: 0.8em;
-    color: #666;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button[type="reset"] {
-    background-color: #f44336;
-    color: white;
-}
-
-#addProductBtn {
-    background-color: #4caf50;
-    color: white;
-}
-
-#reviewProductsBtn {
-    background-color: #2196f3;
-    color: white;
-}
-
-.products-list {
-    margin-top: 30px;
-}
-
-.products-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 15px;
-}
-
-.product-card {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    background-color: white;
-    position: relative;
-}
-
-.product-card h3 {
-    margin-top: 0;
-    color: #2874f0;
-}
-
-.product-card p {
-    margin: 5px 0;
-}
-
-.delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    .form-actions {
-        flex-direction: column;
-        gap: 10px;
+document.addEventListener('DOMContentLoaded', function() {
+    const productForm = document.getElementById('productForm');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const reviewProductsBtn = document.getElementById('reviewProductsBtn');
+    const productsContainer = document.getElementById('productsContainer');
+    
+    let products = JSON.parse(localStorage.getItem('flipkartProducts')) || [];
+    
+    // Render existing products from localStorage
+    renderProducts();
+    
+    addProductBtn.addEventListener('click', function() {
+        const product = {
+            flipkartProductLink: document.getElementById('flipkartProductLink').value,
+            sellerSkuId: document.getElementById('sellerSkuId').value,
+            listingStatus: document.getElementById('listingStatus').value,
+            mrp: document.getElementById('mrp').value,
+            sellingPrice: document.getElementById('sellingPrice').value,
+            fulfilmentBy: document.getElementById('fulfilmentBy').value,
+            brand: document.getElementById('brand').value,
+            size: document.getElementById('size').value,
+            idealFor: document.getElementById('idealFor').value,
+            color: document.getElementById('color').value,
+            fabric: document.getElementById('fabric').value,
+            mainImageUrl: document.getElementById('mainImageUrl').value,
+            procurementType: document.getElementById('procurementType').value,
+            procurementSla: document.getElementById('procurementSla').value,
+            stock: document.getElementById('stock').value,
+            shippingProvider: document.getElementById('shippingProvider').value,
+            countryOfOrigin: document.getElementById('countryOfOrigin').value,
+            sleeveLength: document.getElementById('sleeveLength').value,
+            pattern: document.getElementById('pattern').value,
+            topType: document.getElementById('topType').value,
+            bottomType: document.getElementById('bottomType').value,
+            occasion: document.getElementById('occasion').value,
+            itemsIncluded: document.getElementById('itemsIncluded').value,
+            otherImageUrl1: document.getElementById('otherImageUrl1').value,
+            otherImageUrl2: document.getElementById('otherImageUrl2').value,
+            description: document.getElementById('description').value,
+            searchKeywords: document.getElementById('searchKeywords').value,
+            timestamp: new Date().toISOString()
+        };
+        
+        products.push(product);
+        localStorage.setItem('flipkartProducts', JSON.stringify(products));
+        
+        renderProducts();
+        productForm.reset();
+    });
+    
+    reviewProductsBtn.addEventListener('click', function() {
+        if (products.length === 0) {
+            alert('No products added yet');
+            return;
+        }
+        generateExcel();
+    });
+    
+    function renderProducts() {
+        productsContainer.innerHTML = '';
+        
+        if (products.length === 0) {
+            productsContainer.innerHTML = '<p>No products added yet</p>';
+            return;
+        }
+        
+        products.forEach((product, index) => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            
+            productCard.innerHTML = `
+                <h3>${product.brand} - ${product.sellerSkuId}</h3>
+                <p><strong>Price:</strong> ₹${product.sellingPrice} (MRP: ₹${product.mrp})</p>
+                <p><strong>Size:</strong> ${product.size} | <strong>Color:</strong> ${product.color}</p>
+                <p><strong>Fabric:</strong> ${product.fabric}</p>
+                <p><strong>Status:</strong> ${product.listingStatus}</p>
+                <button class="delete-btn" data-index="${index}">×</button>
+            `;
+            
+            productsContainer.appendChild(productCard);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                products.splice(index, 1);
+                localStorage.setItem('flipkartProducts', JSON.stringify(products));
+                renderProducts();
+            });
+        });
     }
     
-    .products-container {
-        grid-template-columns: 1fr;
+    function generateExcel() {
+        // Create a new workbook
+        const wb = XLSX.utils.book_new();
+        
+        // Prepare the data in the format matching the ethnic_set sheet
+        const excelData = [
+            [
+                "Flipkart Serial Number",
+                "Catalog QC Status",
+                "QC Failed Reason (if any)",
+                "Flipkart Product Link",
+                "Product Data Status",
+                "Disapproval Reason (if any)",
+                "Seller SKU ID",
+                "",
+                "Listing Status",
+                "MRP (INR)",
+                "Your selling price (INR)",
+                "Fullfilment by",
+                "Procurement type",
+                "Procurement SLA (DAY)",
+                "Stock",
+                "Shipping provider",
+                "Local handling fee (INR)",
+                "Zonal handling fee (INR)",
+                "National handling fee (INR)",
+                "Length (CM)",
+                "Breadth (CM)",
+                "Height (CM)",
+                "Weight (KG)",
+                "HSN",
+                "Luxury Cess",
+                "Country Of Origin",
+                "Manufacturer Details",
+                "Packer Details",
+                "Importer Details",
+                "Tax Code",
+                "Minimum Order Quantity (MinOQ)",
+                "Brand",
+                "Size",
+                "Size - Measuring Unit",
+                "Style Code",
+                "Items Included",
+                "Ideal For",
+                "Sleeve Length",
+                "Pattern",
+                "Color",
+                "Brand Color",
+                "Fabric",
+                "Top Type",
+                "Bottom Type",
+                "Additional Garments",
+                "Main Image URL",
+                "Other Image URL 1",
+                "Other Image URL 2",
+                "Other Image URL 3",
+                "Other Image URL 4",
+                "Other Image URL 5",
+                "Main Palette Image URL",
+                "Group ID",
+                "Occasion",
+                "Ornamentation Type",
+                "Top Fabric",
+                "Bottom Fabric",
+                "Secondary Color",
+                "Kurta Style Type",
+                "EAN/UPC",
+                "EAN/UPC - Measuring Unit",
+                "Fabric Care",
+                "Lining Material",
+                "Knit Type",
+                "Neck",
+                "Other Details",
+                "Description",
+                "Search Keywords",
+                "Key Features",
+                "Video URL",
+                "Trend",
+                "Pattern/Print Type",
+                "Sleeve Style",
+                "Detail Placement",
+                "Surface Styling",
+                "Dupatta Included",
+                "Top Length",
+                "Net Quantity",
+                "Fit",
+                "Style",
+                "Lining",
+                "Waistband",
+                "Design",
+                "Supplier Image"
+            ],
+            [
+                "",
+                "",
+                "Fast Validate (Press CTRL+SHIFT+S)",
+                "URL",
+                "Dropdown",
+                "Single - Text",
+                "Text - limited to 64 characters (including spaces)",
+                "",
+                "Single - Text",
+                "Single - Positive_integer",
+                "Single - Positive_integer",
+                "Single - Text",
+                "Single - Text",
+                "Single - Number",
+                "Single - Non_negative_integer",
+                "Single - Text",
+                "Single - Non_negative_integer",
+                "Single - Non_negative_integer",
+                "Single - Non_negative_integer",
+                "Single - Decimal",
+                "Single - Decimal",
+                "Single - Decimal",
+                "Single - Decimal",
+                "Single - Text",
+                "Single - Decimal",
+                "Single - Text",
+                "Single - Long_text",
+                "Single - Long_text",
+                "Single - Long_text",
+                "Single - Text",
+                "Single - Positive_integer",
+                "Single - Text",
+                "SINGLE - TEXT",
+                "Single - Text",
+                "Single - Text",
+                "Multi - Text",
+                "SINGLE - TEXT",
+                "SINGLE - TEXT",
+                "SINGLE - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "SINGLE - TEXT",
+                "SINGLE - TEXT",
+                "Multi - Text",
+                "URL",
+                "URL",
+                "URL",
+                "URL",
+                "URL",
+                "URL",
+                "URL",
+                "Single - Text",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "SINGLE - TEXT",
+                "Multi - Numeric_string",
+                "Single - Text",
+                "Multi - Text",
+                "Multi - Text",
+                "Multi - Text",
+                "SINGLE - TEXT",
+                "Multi - Text",
+                "Single - Text",
+                "Multi - Text",
+                "Multi - Text",
+                "Single - Text",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "SINGLE - TEXT",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "Single - Boolean",
+                "SINGLE - TEXT",
+                "Single - Text",
+                "SINGLE - TEXT",
+                "MULTI - TEXT",
+                "SINGLE - BOOLEAN",
+                "MULTI - TEXT",
+                "MULTI - TEXT",
+                "SINGLE - TEXT"
+            ]
+        ];
+        
+        // Add product data
+        products.forEach(product => {
+            excelData.push([
+                "", // Flipkart Serial Number
+                "", // Catalog QC Status
+                "", // QC Failed Reason (if any)
+                product.flipkartProductLink,
+                "", // Product Data Status
+                "", // Disapproval Reason (if any)
+                product.sellerSkuId,
+                "", // Empty column
+                product.listingStatus,
+                product.mrp,
+                product.sellingPrice,
+                product.fulfilmentBy,
+                product.procurementType,
+                product.procurementSla,
+                product.stock,
+                product.shippingProvider,
+                "", // Local handling fee (INR)
+                "", // Zonal handling fee (INR)
+                "", // National handling fee (INR)
+                "", // Length (CM)
+                "", // Breadth (CM)
+                "", // Height (CM)
+                "", // Weight (KG)
+                "", // HSN
+                "", // Luxury Cess
+                product.countryOfOrigin,
+                "", // Manufacturer Details
+                "", // Packer Details
+                "", // Importer Details
+                "", // Tax Code
+                "", // Minimum Order Quantity (MinOQ)
+                product.brand,
+                product.size,
+                "[L]", // Size - Measuring Unit
+                "", // Style Code
+                product.itemsIncluded,
+                product.idealFor,
+                product.sleeveLength,
+                product.pattern,
+                product.color,
+                "", // Brand Color
+                product.fabric,
+                product.topType,
+                product.bottomType,
+                "", // Additional Garments
+                product.mainImageUrl,
+                product.otherImageUrl1,
+                product.otherImageUrl2,
+                "", // Other Image URL 3
+                "", // Other Image URL 4
+                "", // Other Image URL 5
+                "", // Main Palette Image URL
+                "", // Group ID
+                product.occasion,
+                "", // Ornamentation Type
+                "", // Top Fabric
+                "", // Bottom Fabric
+                "", // Secondary Color
+                "", // Kurta Style Type
+                "", // EAN/UPC
+                "", // EAN/UPC - Measuring Unit
+                "", // Fabric Care
+                "", // Lining Material
+                "", // Knit Type
+                "", // Neck
+                "", // Other Details
+                product.description,
+                product.searchKeywords,
+                "", // Key Features
+                "", // Video URL
+                "", // Trend
+                "", // Pattern/Print Type
+                "", // Sleeve Style
+                "", // Detail Placement
+                "", // Surface Styling
+                "", // Dupatta Included
+                "", // Top Length
+                "", // Net Quantity
+                "", // Fit
+                "", // Style
+                "", // Lining
+                "", // Waistband
+                "", // Design
+                ""  // Supplier Image
+            ]);
+        });
+        
+        // Create a worksheet
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(wb, ws, "ethnic_set");
+        
+        // Generate Excel file and download it
+        XLSX.writeFile(wb, "Flipkart_Bulk_Listing.xlsx");
     }
-}
+});
